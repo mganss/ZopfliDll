@@ -2,10 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "zopfli.h"
 #include "httpcompression.h"
+#include "ZopfliDll.h"
+#include "CmdLine.h"
 
-static HMODULE gzip;
+static HMODULE gzip = NULL;
 static IisInitCompression ProcInitCompression = NULL;
 static IisCreateCompression ProcCreateCompression = NULL;
 static IisCompress ProcCompress = NULL;
@@ -24,6 +25,9 @@ InitCompression(
 VOID
 )
 {
+	auto cmd_line_res = InitCmdLine();
+	if (cmd_line_res != S_OK) return cmd_line_res;
+
 	if (gzip == NULL)
 	{
 		auto gzip_env_path = L"%Windir%\\system32\\inetsrv\\gzip.dll";
@@ -61,18 +65,8 @@ VOID
 ) 
 {
 	if (ProcDeInitCompression != NULL) ProcDeInitCompression();
+	DeInitCmdLine();
 }
-
-typedef struct CompressionContext
-{
-	ZopfliOptions options;
-	BYTE *input_buffer;
-	size_t input_buffer_size;
-	unsigned char *output_buffer;
-	size_t output_buffer_size;
-	size_t output_used;
-	PVOID iis_compression_context;
-} CompressionContext;
 
 static const int zopfli_iterations[] = { 1, 5, 10, 15, 20 };
 
@@ -89,8 +83,13 @@ IN  ULONG reserved
 {
 	auto cc = new CompressionContext();
 	if (cc == NULL) return E_OUTOFMEMORY;
+	cc->input_buffer = NULL;
+	cc->output_buffer = NULL;
 	ZopfliInitOptions(&cc->options);
 	*context = cc;
+	
+	auto cmd_line_res = CreateCmdLine(&cc->cmd_line_context);
+	if (cmd_line_res != S_OK) return cmd_line_res;
 	
 	if (ProcCreateCompression == NULL) return E_FAIL;
 	return ProcCreateCompression(&cc->iis_compression_context, reserved);
@@ -117,11 +116,22 @@ HRESULT WINAPI Compress(
 
 	auto cc = (CompressionContext *)context;
 
-	if (compression_level <= 5)
+	if (compression_level <= MAX_IIS_GZIP_LEVEL)
 	{
+		// do IIS compression
+
 		return ProcCompress(cc->iis_compression_context,
 			input_buffer, input_buffer_size, output_buffer, output_buffer_size, 
 			input_used, output_used, compression_level * 2);
+	}
+
+	if (cmd_line_configured)
+	{
+		// do cmd line compression
+
+		return CmdLineCompress(cc,
+			input_buffer, input_buffer_size, output_buffer, output_buffer_size,
+			input_used, output_used, compression_level);
 	}
 
 	*input_used = 0;
@@ -129,8 +139,11 @@ HRESULT WINAPI Compress(
 
 	if (input_buffer_size > 0)
 	{
-		cc->input_buffer = (BYTE *)realloc(cc->input_buffer, cc->input_buffer_size + input_buffer_size);
-		if (cc->input_buffer == NULL) return E_OUTOFMEMORY;
+		// copy input into our internal buffer
+
+		auto buf = (BYTE *)realloc(cc->input_buffer, cc->input_buffer_size + input_buffer_size);
+		if (buf == NULL) return E_OUTOFMEMORY;
+		cc->input_buffer = buf;
 		auto res = memcpy_s(cc->input_buffer + cc->input_buffer_size, input_buffer_size, input_buffer, input_buffer_size);
 		if (res != 0) return E_FAIL;
 		cc->input_buffer_size = cc->input_buffer_size + input_buffer_size;
@@ -139,15 +152,17 @@ HRESULT WINAPI Compress(
 	}
 	else
 	{
+		// no more input -> compress (or continue copying compressed buffer into output)
+
 		if (cc->output_used == 0)
 		{
-			cc->options.numiterations = zopfli_iterations[compression_level - 6];
+			cc->options.numiterations = zopfli_iterations[compression_level - (MAX_IIS_GZIP_LEVEL + 1)];
 			ZopfliCompress(&cc->options, ZopfliFormat::ZOPFLI_FORMAT_GZIP, cc->input_buffer, cc->input_buffer_size, &cc->output_buffer, &cc->output_buffer_size);
 			if (cc->output_buffer == NULL) return E_OUTOFMEMORY;
 			if (cc->output_buffer_size <= 0) return E_FAIL;
 		}
 
-		if (cc->output_used == cc->output_buffer_size) return S_FALSE;
+		if (cc->output_used == cc->output_buffer_size) return S_FALSE; // done
 	
 		auto bytes_left = cc->output_buffer_size - cc->output_used;
 		auto bytes_to_copy = output_buffer_size < (LONG)bytes_left ? output_buffer_size : (LONG)bytes_left;
@@ -174,11 +189,22 @@ IN PVOID context
 {
 	auto cc = (CompressionContext *)context;
 
-	free(cc->input_buffer);
-	cc->input_buffer = NULL;
+	DestroyCmdLine(&cc->cmd_line_context);
+
+	if (cc->input_buffer != NULL)
+	{
+		free(cc->input_buffer);
+		cc->input_buffer = NULL;
+	}
+
 	cc->input_buffer_size = 0;
-	free(cc->output_buffer);
-	cc->output_buffer = NULL;
+
+	if (cc->output_buffer != NULL)
+	{
+		free(cc->output_buffer);
+		cc->output_buffer = NULL;
+	}
+
 	cc->output_buffer_size = 0;
 	cc->output_used = 0;
 

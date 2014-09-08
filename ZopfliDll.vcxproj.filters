@@ -60,6 +60,12 @@
     <ClInclude Include="httpcompression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmdLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZopfliDll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -105,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="zopfli_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

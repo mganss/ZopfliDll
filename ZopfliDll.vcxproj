@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="blocksplitter.h" />
     <ClInclude Include="cache.h" />
+    <ClInclude Include="CmdLine.h" />
     <ClInclude Include="deflate.h" />
     <ClInclude Include="gzip_container.h" />
     <ClInclude Include="hash.h" />
@@ -162,10 +163,12 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="zlib_container.h" />
     <ClInclude Include="zopfli.h" />
+    <ClInclude Include="ZopfliDll.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="blocksplitter.c" />
     <ClCompile Include="cache.c" />
+    <ClCompile Include="CmdLine.cpp" />
     <ClCompile Include="deflate.c" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
