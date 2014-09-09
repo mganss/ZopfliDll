@@ -6,13 +6,15 @@ It can replace the builtin [gzip compression library](http://msdn.microsoft.com/
 ## Usage (Zopfli)
 
 1. Copy the `ZopfliDll.dll` (or `ZopfliDll64.dll`) file to a folder accessible by the IIS process. 
-2. Edit the `<scheme>` element of the `<httpCompression>` element in [`applicationHost.config`](http://www.iis.net/learn/get-started/planning-your-iis-architecture/introduction-to-applicationhostconfig) (unfortunately, these settings cannot be overriden in Web.config):
+2. Edit the [`<scheme>` element](http://www.iis.net/configreference/system.webserver/httpcompression/scheme) of the [`<httpCompression>` element](http://www.iis.net/configreference/system.webserver/httpcompression) in [`applicationHost.config`](http://www.iis.net/learn/get-started/planning-your-iis-architecture/introduction-to-applicationhostconfig) (unfortunately, these settings cannot be overriden in Web.config):
 ```xml
 <httpCompression>
    <scheme name="gzip" dll="Path\To\ZopfliDll64.dll" />
 </httpCompression>
 ```
 3. Restart the "World Wide Web Publishing Service".
+
+Static files are by default saved to `%SystemDrive%\inetpub\temp\IIS Temporary Compressed Files`.
 
 Because you cannot have different DLLs for dynamic and static compression (and the DLL does not know whether it's compressing dynamic or static content), ZopfliDll uses the compression level to switch between the builtin fast gzip compression and the slow Zopfli algorithm:
 

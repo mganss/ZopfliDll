@@ -147,29 +147,26 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="blocksplitter.h" />
-    <ClInclude Include="cache.h" />
     <ClInclude Include="CmdLine.h" />
-    <ClInclude Include="deflate.h" />
-    <ClInclude Include="gzip_container.h" />
-    <ClInclude Include="hash.h" />
     <ClInclude Include="httpcompression.h" />
-    <ClInclude Include="katajainen.h" />
-    <ClInclude Include="lz77.h" />
-    <ClInclude Include="squeeze.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="tree.h" />
-    <ClInclude Include="util.h" />
-    <ClInclude Include="zlib_container.h" />
-    <ClInclude Include="zopfli.h" />
     <ClInclude Include="ZopfliDll.h" />
+    <ClInclude Include="zopfli\blocksplitter.h" />
+    <ClInclude Include="zopfli\cache.h" />
+    <ClInclude Include="zopfli\deflate.h" />
+    <ClInclude Include="zopfli\gzip_container.h" />
+    <ClInclude Include="zopfli\hash.h" />
+    <ClInclude Include="zopfli\katajainen.h" />
+    <ClInclude Include="zopfli\lz77.h" />
+    <ClInclude Include="zopfli\squeeze.h" />
+    <ClInclude Include="zopfli\tree.h" />
+    <ClInclude Include="zopfli\util.h" />
+    <ClInclude Include="zopfli\zlib_container.h" />
+    <ClInclude Include="zopfli\zopfli.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="blocksplitter.c" />
-    <ClCompile Include="cache.c" />
     <ClCompile Include="CmdLine.cpp" />
-    <ClCompile Include="deflate.c" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -184,22 +181,25 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="gzip_container.c" />
-    <ClCompile Include="hash.c" />
-    <ClCompile Include="katajainen.c" />
-    <ClCompile Include="lz77.c" />
-    <ClCompile Include="squeeze.c" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tree.c" />
-    <ClCompile Include="util.c" />
-    <ClCompile Include="zlib_container.c" />
     <ClCompile Include="ZopfliDll.cpp" />
-    <ClCompile Include="zopfli_lib.c" />
+    <ClCompile Include="zopfli\blocksplitter.c" />
+    <ClCompile Include="zopfli\cache.c" />
+    <ClCompile Include="zopfli\deflate.c" />
+    <ClCompile Include="zopfli\gzip_container.c" />
+    <ClCompile Include="zopfli\hash.c" />
+    <ClCompile Include="zopfli\katajainen.c" />
+    <ClCompile Include="zopfli\lz77.c" />
+    <ClCompile Include="zopfli\squeeze.c" />
+    <ClCompile Include="zopfli\tree.c" />
+    <ClCompile Include="zopfli\util.c" />
+    <ClCompile Include="zopfli\zlib_container.c" />
+    <ClCompile Include="zopfli\zopfli_lib.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
