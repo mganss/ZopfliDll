@@ -46,3 +46,7 @@ The command line tool should read uncompressed data from stdin and write compres
 ```
 
 Compression levels of 0-5 in the IIS configuration are used for compression with the builtin gzip compression as in the table above. Levels 6-10 are spread to the range in the placeholder (1-9 in the example).
+
+## Status
+
+"Works on my machine"&trade; :smile_cat:
