@@ -3,15 +3,19 @@
 ZopfliDll is a custom extension library for Microsoft IIS that can compress with [Google's Zopfli](https://code.google.com/p/zopfli/) algorithm or a configurable command line tool (such as [7-Zip](http://www.7-zip.org/)). 
 It can replace the builtin [gzip compression library](http://msdn.microsoft.com/en-us/library/dd692872.aspx) (gzip.dll).
 
+If you want to try it out on the command line, check out [this other project](https://github.com/mganss/IisGzip).
+
 ## Usage (Zopfli)
 
 1. Copy the `ZopfliDll.dll` (or `ZopfliDll64.dll`) file to a folder accessible by the IIS process. 
 2. Edit the [`<scheme>` element](http://www.iis.net/configreference/system.webserver/httpcompression/scheme) of the [`<httpCompression>` element](http://www.iis.net/configreference/system.webserver/httpcompression) in [`applicationHost.config`](http://www.iis.net/learn/get-started/planning-your-iis-architecture/introduction-to-applicationhostconfig) (unfortunately, these settings cannot be overriden in Web.config):
-```xml
-<httpCompression>
-   <scheme name="gzip" dll="Path\To\ZopfliDll64.dll" />
-</httpCompression>
-```
+
+   ```xml
+   <httpCompression>
+      <scheme name="gzip" dll="Path\To\ZopfliDll64.dll" />
+   </httpCompression>
+   ```
+
 3. Restart the "World Wide Web Publishing Service".
 
 Static files are by default saved to `%SystemDrive%\inetpub\temp\IIS Temporary Compressed Files`.
